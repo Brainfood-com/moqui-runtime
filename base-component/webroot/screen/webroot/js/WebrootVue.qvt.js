@@ -2080,7 +2080,7 @@ moqui.webrootVue = new Vue({
         moquiSessionToken:"", appHost:"", appRootPath:"", userId:"", locale:"en",
         notificationClient:null, qzVue:null, leftOpen:false, moqui:moqui },
     methods: {
-        setUrl: function(url, bodyParameters, onComplete) {
+        setUrl: function(url, bodyParameters, onComplete, pushState=true) {
             // cancel current load if needed
             if (this.currentLoadRequest) {
                 console.log("Aborting current page load currentLinkUrl " + this.currentLinkUrl + " url " + url);
@@ -2127,8 +2127,10 @@ moqui.webrootVue = new Vue({
                     }
                 }});
 
-                // set the window URL
-                window.history.pushState(null, this.ScreenTitle, url);
+                if (pushState) {
+                    // set the window URL
+                    window.history.pushState(null, this.ScreenTitle, url);
+                }
                 // notify url listeners
                 this.urlListeners.forEach(function(callback) { callback(url, this) }, this);
                 // scroll to top
@@ -2394,7 +2396,7 @@ moqui.webrootVue = new Vue({
     }
 
 });
-window.addEventListener('popstate', function() { moqui.webrootVue.setUrl(window.location.pathname + window.location.search); });
+window.addEventListener('popstate', function() { moqui.webrootVue.setUrl(window.location.pathname + window.location.search, null, null, false); });
 
 // NOTE: simulate vue-router so this.$router.resolve() works in a basic form; required for use of q-btn 'to' attribute along with router-link component defined above
 moqui.webrootRouter = {
